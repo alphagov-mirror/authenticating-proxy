@@ -16,8 +16,26 @@ class Proxy < Rack::Proxy
       debug_logging(env, "Proxing request: #{path}")
       super.tap do |response|
         set_auth_bypass_cookie(response, env)
-        token_rejected = forbidden_response?(response) && !gds_sso_path?(path)
-        env["warden"].authenticate! if token_rejected
+
+        # temporary hack
+        request = Rack::Request.new(env)
+        token_rejected = forbidden_response?(response) && token = request.params.fetch("token", get_auth_bypass_cookie(env))
+        if token_rejected
+          # we got a 403, despite providing a token - so need to try signing in instead
+          if env['warden'].authenticated?
+            # user isn't logged in. Redirect to signon.
+            # ASSUMPTION - I'm not sure if this is actually redirecting
+            #######env["warden"].authenticate!
+            return [ 302, {'Location' =>"https://gov.uk"}, [] ] # does this work?
+          else
+            # We've got a 403 despite being authenticated and providing a token.
+            # This means the user isn't authorised to view the content, and hasn't
+            # been provided with a token that works either.
+            # Do nothing - return the 403 as we should.
+          end
+        else
+          # token was accepted. Continue
+        end
       end
     else
       debug_logging(env, "Request not being proxied: #{path}")
