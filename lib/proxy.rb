@@ -27,6 +27,7 @@ class Proxy < Rack::Proxy
   end
 
   def rewrite_env(env)
+    env.delete("HTTP_HOST")
     add_authenticated_user_header(env)
     add_authenticated_user_organisation_header(env)
     env
