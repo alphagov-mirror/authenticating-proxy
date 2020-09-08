@@ -5,7 +5,6 @@ ENV['GOVUK_UPSTREAM_URI'] = 'http://upstream-host.com'
 # Must be at top of file
 require 'simplecov'
 require 'simplecov-rcov'
-SimpleCov.formatter = SimpleCov::Formatter::RcovFormatter
 SimpleCov.start 'rails'
 
 require 'spec_helper'
