@@ -2,8 +2,6 @@ ENV["RAILS_ENV"] ||= "test"
 ENV["GOVUK_UPSTREAM_URI"] = "http://upstream-host.com"
 
 require "simplecov"
-require "simplecov-rcov"
-SimpleCov.formatter = SimpleCov::Formatter::RcovFormatter
 SimpleCov.start "rails"
 
 require File.expand_path("../config/environment", __dir__)
